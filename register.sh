@@ -29,25 +29,54 @@ function get_nyx_auth_token()
     echo "response: ${response_json}"
 }
 
+
+function nyx_send
+{
+    declare -a all_params
+    local api="$1"
+    local param="$2"
+    local response
+
+    all_params=(
+        "-s" "-X"
+        "POST" "https://nyx.cz/${api}"
+        "-H" "Authorization: Bearer ${token}"
+        "-H" "accept: application/json"
+        "-H" "Content-Type: application/x-www-form-urlencoded"
+        "-d" "${param}"
+        )
+    response=$(curl "${all_params[@]}")
+    printf "%s" "${response}"
+}
+
+nyx_send "api/mail/send" "recipient=${username}&message=neco&format=text"
+
 function check_token()
 {
+
+set -x
+    nyx_send "api/mail/send" "recipient=${username}&message=neco&format=text"
+echo "${response}"
+set +x
     #response=$(curl --location --request POST "https://nyx.cz/api/mail/send?recipient=${username}&message=${app_name} instalovan" -A "${app_name}")
     
-    echo "Username: ${username} token: ${token}"
-    
-    set -x
-    response="$(curl -s -X 'POST' \
-            'https://nyx.cz/api/mail/send' \
-            -H 'Authorization: Bearer ${token}' \
-            -H 'accept: application/json' \
-            -H 'Content-Type: application/x-www-form-urlencoded' \
-            -d 'recipient="${username}"&message=neco&format=text')"
-    echo "Error code $?"
-    set +x
+    #echo "Username: ${username} token: ${token}"
+    #set -x
+   # request="-s -X POST \
+   #         https://nyx.cz/api/mail/send \
+   #         -H \'Authorization: Bearer ${token}\' \
+   #         -H \'accept: application/json\' \
+   #         -H \'Content-Type: application/x-www-form-urlencoded\' \
+   #         -d \'recipient=${username}&message=neco&format=text' \
+   #         "
+#    echo "request: ${request}"
+    #response=$(curl "${request}")
+#    echo "Error code $?"
+#    set +x
     error="$(jq -r '.error.code' <<< "${response}")"
-    echo "Kod odpovedi: ${error}"
-    echo "***"
-    echo "${response}"
+ #   echo "Kod odpovedi: ${error}"
+ #   echo "***"
+ #   echo "${response}"
 
     if [[ "${error}" == "401" ]] ; then
         printf "autorizace jeste neni dokoncena. Pokud jsi potvrzovaci kod ztratil, smaz soubor ${config_file} a spust znovu tento skript.\n"
