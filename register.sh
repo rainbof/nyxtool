@@ -18,7 +18,7 @@ function get_nyx_auth_token()
     local confirmation_code
     local token
 
-    response_json="$(curl -sS --location --request POST "https://nyx.cz/api/create_token/${username}" -A "${app_name}")"    
+    response_json="$(curl -sS --location --request POST "https://nyx.cz/api/create_token/${username}" -A "${app_name}")"
     confirmation_code="$(jq -r '.confirmation_code' <<<${response_json})"
     token="$(jq -r '.token' <<<${response_json})"
 
@@ -49,44 +49,22 @@ function nyx_send
     printf "%s" "${response}"
 }
 
-nyx_send "api/mail/send" "recipient=${username}&message=neco&format=text"
-
 function check_token()
 {
 
-set -x
-    nyx_send "api/mail/send" "recipient=${username}&message=neco&format=text"
-echo "${response}"
-set +x
-    #response=$(curl --location --request POST "https://nyx.cz/api/mail/send?recipient=${username}&message=${app_name} instalovan" -A "${app_name}")
+    local msg
+    msg="${app_name} otestoval token v $(date)"
     
-    #echo "Username: ${username} token: ${token}"
-    #set -x
-   # request="-s -X POST \
-   #         https://nyx.cz/api/mail/send \
-   #         -H \'Authorization: Bearer ${token}\' \
-   #         -H \'accept: application/json\' \
-   #         -H \'Content-Type: application/x-www-form-urlencoded\' \
-   #         -d \'recipient=${username}&message=neco&format=text' \
-   #         "
-#    echo "request: ${request}"
-    #response=$(curl "${request}")
-#    echo "Error code $?"
-#    set +x
+    response=$(nyx_send "api/mail/send" "recipient=${username}&message=${msg}&format=text")
     error="$(jq -r '.error.code' <<< "${response}")"
- #   echo "Kod odpovedi: ${error}"
- #   echo "***"
- #   echo "${response}"
 
     if [[ "${error}" == "401" ]] ; then
         printf "autorizace jeste neni dokoncena. Pokud jsi potvrzovaci kod ztratil, smaz soubor ${config_file} a spust znovu tento skript.\n"
     fi
 }
-
 if ! load_config "${config_file}" || [[ -z "${token}" ]]; then
     printf 'zda se ze nemas token, takze ho ziskam\n'
     get_nyx_auth_token
+    load_config
 fi
-#load_config
-#echo "token: ${token}"
 check_token
