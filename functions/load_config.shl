@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 function load_config()
 {
     if [[ -f ${config_file} ]] ; then
