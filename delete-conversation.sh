@@ -6,6 +6,8 @@ discussionId="284489" #jede bagr
 
 source functions/load_config.shl
 source functions/nyxapi_send.shl
+source functions/nyx_discussion_send.shl
+
 config_file="config.conf"
 
 load_config
@@ -19,9 +21,4 @@ for id in "${all_postid[@]}"; do
     printf 'deleted\n'
 done
 
-curl -X 'POST' \
-  "https://nyx.cz/api/discussion/${discussionId}/send/text" \
-  -H "Authorization: Bearer ${token}" \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/x-www-form-urlencoded' \
-  -d 'content=krles&format=text'
+nyx_discussion_send "Krleš" "${discussionId}" "text"
