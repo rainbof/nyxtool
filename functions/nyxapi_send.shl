@@ -1,5 +1,6 @@
-function nyxapi_send
-{
+#!/usr/bin/env bash
+
+function nyxapi_send() {
     declare -a all_params
     local api="$1"
     local param="$2"
