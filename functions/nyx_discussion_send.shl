@@ -3,12 +3,12 @@
 function nyx_discussion_send() {
     local message="${1:?You cant send empty message}"
     local discussion_id="${2?Discussion id must be provided}"
-    local msg_format="${2:-text}"
+    local msg_format="${3:-text}"
 
     curl -s -X 'POST' \
     "https://nyx.cz/api/discussion/${discussion_id}/send/text" \
     -H "Authorization: Bearer ${token}" \
     -H 'accept: application/json' \
     -H 'Content-Type: application/x-www-form-urlencoded' \
-    -d "content=${message}&format=${msg_format}"
+    -d "$(printf 'content=%s&format=%s' "$message" "$msg_format")"
 }

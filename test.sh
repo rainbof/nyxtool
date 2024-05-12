@@ -8,5 +8,7 @@ config_file="config.conf"
 
 set -x
 set -e
-nyx_discussion_send "Ahoj lamo" "${discussionId}"
+load_config
 
+txt="Krleš in $(date)"
+nyx_discussion_send "${txt}" "${discussionId}" "text"
