@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+function load_functions()
+{
+    shopt -s globstar
+    for shl in functions/**/*.shl; do
+        if [[ -f "${shl}" ]]; then
+            # Spuštění skriptu v lokálním kontextu
+            . "${shl}"
+        fi
+    done
+    shopt -u globstar
+}
+

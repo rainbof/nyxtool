@@ -5,8 +5,8 @@ app_name="mazac diskuse"
 config_file="config.conf"
 token=""
 
-source "functions/load_config.shl"
-source "functions/nyxapi_send.shl"
+source functions/load_functions.shl
+load_functions
 
 function save_config()
 {
